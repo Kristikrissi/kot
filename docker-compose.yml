@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+     # - OPENROUTER_API_KEY=ваш_api_ключ_здесь
+      - MODEL=${MODEL:-anthropic/claude-3-opus:beta}
+      - PORT=3001
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/chat_history.json:/app/chat_history.json
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:3001
+    restart: unless-stopped
